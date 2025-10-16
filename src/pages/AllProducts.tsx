@@ -1,45 +1,44 @@
-
-import React from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useSelector } from "react-redux";
-import { RootState } from "../store";
-import { fetchProducts, deleteProduct } from "../Api/api";
+import React from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { fetchProducts, deleteProduct } from '../Api/api';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store';
 
 export default function AllProducts() {
   const queryClient = useQueryClient();
 
   const { data, isLoading, refetch, isFetching } = useQuery<{ products: any[] }, Error>({
-    queryKey: ["products"],
+    queryKey: ['products'],
     queryFn: () => fetchProducts(),
   });
 
   const { username, role } = useSelector((s: RootState) => s.auth);
-  const isAdmin = role === "admin" || username === "superadmin";
+  const isAdmin = role === 'admin' || username === 'superadmin';
 
   const delMutation = useMutation({
     mutationFn: (id: number) => deleteProduct(id),
     onSuccess: (_data, id: number) => {
-      queryClient.setQueryData(["products"], (old: any) => {
+      queryClient.setQueryData(['products'], (old: any) => {
         if (!old) return old;
         return { ...old, products: old.products.filter((p: any) => p.id !== id) };
       });
-      alert(`Deleted product ${id}`);
+      window.alert(`Deleted product #${id} (simulated)`);
     },
-    onError: () => alert("Delete failed"),
+    onError: () => window.alert('Delete failed'),
   });
 
   if (isLoading) return <div className="p-4">Loading products...</div>;
 
   return (
-    <div className="p-4 min-h-[80vh] sm:min-h-[90vh] lg:min-h-[85vh] ">
+    <div className="p-4">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">All Products</h2>
         <button
           onClick={() => refetch()}
-          className={`px-3 py-1 rounded bg-blue-600 text-white ${isFetching ? "opacity-50" : ""}`}
+          className={`px-3 py-1 rounded bg-blue-600 text-white ${isFetching ? 'opacity-50' : ''}`}
           disabled={!!isFetching}
         >
-          {isFetching ? "Refreshing..." : "Refresh"}
+          {isFetching ? 'Refreshing...' : 'Refresh'}
         </button>
       </div>
 
