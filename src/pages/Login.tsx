@@ -69,6 +69,7 @@ export default function Login() {
     try {
       const res: any = await apiLogin(username, password);
       const token = res.token ?? res.accessToken ?? res;
+      const isSuper = username?.trim().toLowerCase() === 'admin';
       const role = res.role ?? (username === 'superadmin' ? 'admin' : 'user');
       localStorage.setItem('token', token ?? '');
       localStorage.setItem('username', username ?? '');

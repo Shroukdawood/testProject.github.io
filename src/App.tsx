@@ -70,13 +70,14 @@ import { store } from './store';
 import Login from './pages/Login';
 import AllProducts from './pages/AllProducts';
 import Category from './pages/Category';
+import Admin from './pages/Admin';
 import { useSelector } from 'react-redux';
 import { RootState } from './store';
 import LockOverlay from './components/LockOverlay';
 import { useAutoLock } from './hooks/useAutoLock';
 
 export default function App() {
-  const { token } = useSelector((s: RootState) => s.auth);
+  const { token, role, username } = useSelector((s: RootState) => s.auth);
   const [locked, setLocked] = useState(false);
 
   useAutoLock(() => setLocked(true));
@@ -103,6 +104,7 @@ export default function App() {
               <nav className="flex justify-around p-4 bg-gray-100">
                 <Link to="/products">All Products</Link>
                 <Link to="/category">Category</Link>
+                {(role === 'admin' || username === 'superadmin') && <Link to="/admin">Admin</Link>}
                 <button onClick={() => localStorage.clear()} className="text-red-600">
                   Sign Out
                 </button>
@@ -111,6 +113,7 @@ export default function App() {
               <Routes>
                 <Route path="/products" element={<AllProducts />} />
                 <Route path="/category" element={<Category />} />
+                <Route path="/admin" element={(role === 'admin' || username === 'superadmin') ? <Admin /> : <Navigate to="/products" />} />
                 <Route path="*" element={<Navigate to="/products" />} />
               </Routes>
             </>
